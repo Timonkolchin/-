@@ -1,0 +1,96 @@
+Задача 1
+SELECT orderNumber, productCode, quantityOrdered * priceEach AS cost
+FROM `orderdetails`
+ORDER BY cost DESC 
+LIMIT 10
+
+
+Задача 2
+SELECT orderNumber, SUM(quantityOrdered * priceEach) AS total
+FROM `orderdetails`
+GROUP BY orderNumber
+HAVING total > 59000
+
+
+Задача 3
+SELECT t1.orderNumber, orderDate, status, SUM(quantityOrdered * priceEach) AS total
+FROM `orderdetails` AS t1
+INNER JOIN orders AS t2
+ON t1.orderNumber = t2.orderNumber
+GROUP BY orderNumber
+HAVING total > 59000
+
+
+Задача 4
+SELECT contactLastName,
+       contactFirstName,
+       country, 
+       t1.orderNumber, 
+       orderDate, 
+       status, 
+       SUM(quantityOrdered * priceEach) AS total
+FROM `orderdetails` AS t1
+INNER JOIN orders AS t2
+ON t1.orderNumber = t2.orderNumber
+INNER JOIN customers AS t3
+ON t2.customerNumber = t3.customerNumber
+GROUP BY orderNumber
+HAVING total > 59000
+ORDER BY total DESC            - так красивше
+
+Задача 5
+SELECT productName, 
+       SUM(quantityOrdered * priceEach) AS total
+FROM `orderdetails` AS t1
+INNER JOIN products AS t2
+ON t1.productCode = t2.productCode
+GROUP BY t1.productCode
+ORDER BY total DESC
+LIMIT 10
+
+
+Задача 6
+SELECT t2.lastName,
+       t2.firstName,
+       contactLastName,
+       contactFirstName
+FROM customers AS t1
+LEFT JOIN employees AS t2
+ON t1.salesRepEmployeeNumber = t2.employeeNumber
+UNION
+SELECT t2.lastName,
+       t2.firstName,
+       contactLastName,
+       contactFirstName
+FROM customers AS t1
+RIGHT JOIN employees AS t2
+ON t1.salesRepEmployeeNumber = t2.employeeNumber
+Если надо было не весь список, а только не обслуживающих сотрудников и необслуженных клиентов, тогда так: (список будет из 30 позиций) (в верхнем случае 130 позиций)
+SELECT t2.lastName,
+       t2.firstName,
+       contactLastName,
+       contactFirstName
+FROM customers AS t1
+LEFT JOIN employees AS t2
+ON t1.salesRepEmployeeNumber = t2.employeeNumber
+WHERE t2.lastName IS NULL
+UNION
+SELECT t2.lastName,
+       t2.firstName,
+       contactLastName,
+       contactFirstName
+FROM customers AS t1
+RIGHT JOIN employees AS t2
+ON t1.salesRepEmployeeNumber = t2.employeeNumber
+WHERE contactLastName IS NULL
+
+
+Задача 7
+SELECT t2.firstName,
+       t2.lastName,
+       t2.jobTitle,
+       t1.firstName AS subFirstName,
+       t1.lastName AS subLastName 
+FROM `employees` AS t1
+RIGHT JOIN employees AS t2
+ON t1.reportsTo = t2.employeeNumber
